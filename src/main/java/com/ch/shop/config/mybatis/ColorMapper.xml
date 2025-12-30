@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Color">
+
+	<!-- 모든 색상 가져오기 -->
+	<select id="selectAll" resultType="Color">
+		select color_id, color_name from color
+	</select>
+	
+	<!-- 특정 상품에 소속된 색상만 가져오기 -->
+	<select id="selectColorByProductId" parameterType="int" resultType="Color">
+		select color_id, color_name from color where color_id in (select color_id from product_color where product_id=#{product_id})
+	</select>
+
+</mapper>

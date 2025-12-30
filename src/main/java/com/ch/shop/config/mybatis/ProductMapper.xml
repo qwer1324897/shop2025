@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Product">
+
+	<insert id="insert" parameterType="Product">
+		insert into product (product_name, brand, price, discount, introduce, detail, subcategory_id)
+		values(#{product_name}, #{brand}, #{price}, #{discount}, #{introduce}, #{detail}, #{subCategory.subcategory_id})
+	
+	<!--
+		레코드를 insert 하자마자 방금 들어간 pk 값을 반환해야 할 때가 굉장히 많다
+		따라서 MyBatis 는 이 기능을 별도의 쿼리문이 아니라 현재 insert 태그 안에서 지원하는 방법자체를 제공한다.
+		last_insert_id() : 현재 세션에서 발생시킨 auto_increment 값을 반환.
+		현재 세션 내에서 나에 의해 발생한 값만 반환. 오라클의 경우 '시퀀스명.currval'
+	 -->
+	 <selectKey keyColumn="product_id" resultType="int" order="AFTER" keyProperty="product_id">
+	 	select last_insert_id() as product_id
+	 </selectKey>
+	
+	</insert>
+	
+	<!-- 
+		Mybatis 에 의해 DTO와 컬럼명이 일치하지 않을 경우 자동 매핑이 실행될 수 없으므로
+		이 시점부터는 개발자가 나서서 수동으로 매핑을 시도할 수 있다.
+	 -->
+	 
+	 <resultMap type="Product" id="productMap">
+	 	<id column="product_id" property="product_id"/>
+	 	<result column="product_name" property="product_name"/>
+	 	<result column="brand" property="brand"/>
+	 	<result column="price" property="price"/>
+	 	<result column="discount" property="discount"/>
+	 	<result column="introduce" property="introduce"/>
+	 	<result column="detail" property="detail"/>
+	 	
+	 	<!-- 
+	 		다른 테이블의 레코드 1 건을 가져오기 
+	 		association 은 부모의 레코드를 가져오는 기능을 말하며, 자식과 부모의 1:1 관계에서 사용 
+	 	-->
+	 	
+	 	<association column="subcategory_id" property="subCategory" javaType="SubCategory"
+	 		select="SubCategory.select"></association>
+	 	
+	 	<!-- collection: 여러건의 자식 레코드를 가져올 수 있는 mybatis 의 기능. join 등의 쿼리문을 대체할 수 있다. -->
+	 	 <collection 
+	 	 	column="product_id" 
+	 	 	select="ProductImg.selectByProductId"  
+	 	 	property="productImgList"
+	 	 	javaType="java.util.List" 
+	 	 	ofType="ProductImg"
+	 	 ></collection>
+	 	 
+	 	 <!-- 상품에 소속된 색상을 가져와서, colorList 속성에 채워넣기. -->
+	 	 <collection 
+	 	 	column="product_id" 
+	 	 	select="Color.selectColorByProductId"  
+	 	 	property="colorList"
+	 	 	javaType="java.util.List" 
+	 	 	ofType="Color"
+	 	 ></collection>
+	 	 
+	 	 <!-- 상품에 소속된 사이즈를 가져와서, sizeList 속성에 채워넣기. -->
+	 	 <collection 
+	 	 	column="product_id" 
+	 	 	select="Size.selectSizeByProductId"  
+	 	 	property="sizeList"
+	 	 	javaType="java.util.List" 
+	 	 	ofType="Size"
+	 	 ></collection>
+	 	 
+	 	
+	 </resultMap>
+	 
+	 <!-- 재사용 되는 공통 쿼리문을 정의 -->
+	 <sql id="sql_select">
+        SELECT product_id, product_name, brand, price, discount, introduce, detail, subcategory_id FROM product	 	
+	 </sql>
+	 
+	 <!-- 모든상품 다 가져오기 -->
+	 <select id="selectAll" resultMap="productMap">
+	 	<include refid="sql_select"></include>
+    </select>
+    
+    <!-- 하위 카테고리에 소속된 상품만 가져오기 -->
+    <select id="selectBySubCategoryId" parameterType="int" resultMap="productMap">
+    	<include refid="sql_select"></include>
+    	<!-- mybatis 의 where tag 을 사용하면 조건이 없을 경우, where 절이 동적으로 사라지고 조건이 있으면, where 문이 동적으로 sql 에 포함된다. if 문 처럼.-->
+    	<where>
+    		<if test="_parameter!=0">
+    			subcategory_id=#{subcategory_id}
+    		</if>
+    	</where>
+    </select>
+    
+ 	<select id="">
+ 		
+ 	</select>
+	 
+	 <!-- 상품 1건 가져오기 -->
+	 <select id="select" parameterType="int" resultMap="productMap">
+	 	<include refid="sql_select"></include> where product_id=#{product_id}
+	 </select>
+	 
+</mapper>

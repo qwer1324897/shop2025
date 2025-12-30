@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	 <typeAliases>
+	 	<typeAlias type = "com.ch.shop.dto.Board" alias="Board"/>
+	 	<typeAlias type = "com.ch.shop.dto.TopCategory" alias="TopCategory"/>
+	 	<typeAlias type = "com.ch.shop.dto.SubCategory" alias="SubCategory"/>
+	 	<typeAlias type = "com.ch.shop.dto.Color" alias="Color"/>
+	 	<typeAlias type = "com.ch.shop.dto.Size" alias="Size"/>
+	 	<typeAlias type = "com.ch.shop.dto.Product" alias="Product"/>
+	 	<typeAlias type = "com.ch.shop.dto.ProductColor" alias="ProductColor"/>
+	 	<typeAlias type = "com.ch.shop.dto.ProductSize" alias="ProductSize"/>
+	 	<typeAlias type = "com.ch.shop.dto.ProductImg" alias="ProductImg"/>
+	 	<typeAlias type = "com.ch.shop.dto.Provider" alias="Provider"/>
+	 	<typeAlias type = "com.ch.shop.dto.Member" alias="Member"/>
+	 	
+	 </typeAliases>
+  
+<!-- 자바 코드 대신 쿼리문을 작성해 놓은 파일을 매퍼라고 하며 매퍼의 위치는 아래의 mappers 태그의 자식 태그로 등록해야 한다. -->
+  <mappers>
+    <mapper resource="com/ch/shop/config/mybatis/BoardMapper.xml"/>
+    <mapper resource="com/ch/shop/config/mybatis/TopCategoryMapper.xml"/>
+    <mapper resource="com/ch/shop/config/mybatis/SubCategoryMapper.xml"/>
+    <mapper resource="com/ch/shop/config/mybatis/ColorMapper.xml"/>
+    <mapper resource="com/ch/shop/config/mybatis/SizeMapper.xml"/>
+    <mapper resource="com/ch/shop/config/mybatis/ProductMapper.xml"/>
+    <mapper resource="com/ch/shop/config/mybatis/ProductColorMapper.xml"/>
+    <mapper resource="com/ch/shop/config/mybatis/ProductSizeMapper.xml"/>
+    <mapper resource="com/ch/shop/config/mybatis/ProductImgMapper.xml"/>
+    <mapper resource="com/ch/shop/config/mybatis/ProviderMapper.xml"/>
+    <mapper resource="com/ch/shop/config/mybatis/MemberMapper.xml"/>
+    
+  </mappers>
+
+</configuration>

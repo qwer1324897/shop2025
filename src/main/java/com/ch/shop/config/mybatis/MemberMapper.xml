@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Member">
+
+	<!-- 회원가입 여부 확인 -->
+	<select id="findByProvider" parameterType="Member" resultType="Member">
+		select member_id, provider_userid, name, email, regdate, updated, provider_id
+		from member
+		where provider_userid=#{provider_userid} and provider_id=#{provider.provider_id}
+	</select>
+
+	<!-- 회원가입 -->
+	<insert id="insert" parameterType="Member">
+		insert into member(home_id, home_pass, provider_userid, name, email, provider_id)
+		values (#{home_id}, #{home_pass}, #{provider_userid}, #{name}, #{email}, #{provider.provider_id})
+	</insert>
+
+	<!-- 회원정보 수정 -->
+	<update id="update" parameterType="Member">
+		update member set home_pass=#{home_pass}, name=#{name}, email=#{email}
+		where member_id=#{member_id}
+	</update>
+
+
+</mapper>

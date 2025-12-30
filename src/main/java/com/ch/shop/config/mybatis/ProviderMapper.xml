@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Provider">
+
+	<select id="selectAll" resultType="Provider">
+		select provider_id, provider_name from provider
+	</select>
+	
+	<!-- sns 사업자명으로 정보 가져오기 -->
+	<select id="selectByName" parameterType="String" resultType="Provider">
+		select provider_id, provider_name from provider
+		where provider_name=#{provider_name}
+	</select>
+
+</mapper>

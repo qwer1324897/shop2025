@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" id="WebApp_ID" version="3.1">
+  <display-name>shop</display-name>
+
+
+
+	<!-- 
+		서버가 가동될 때를 감지하는 리스너 등록
+		ServletContext 에 대한 초기설정을 위해서는 서버가 가동되는 시점에 동작하는 리스너를 이용해야 함
+	 -->
+	 <context-param>
+	 	<param-name>contextClass</param-name>
+		<param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+	 </context-param>
+		 	 
+	 <context-param>
+	 	<param-name>contextConfigLocation</param-name>
+	 	<param-value>com.ch.shop.config.spring.RootConfig</param-value>
+	 </context-param>
+	 
+	 <!-- 애플리케이션이 가동되는 시점에 ServletContext 를 얻어와, AnnotationConfigApplicationContext 컨테이너에 설정파일을 이용하여 Bean들을 생성하게 한다 -->
+	 <listener>
+	 	<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	 </listener>
+	 
+
+	<!-- 
+		MVC 에서 모델  영역은 모든 요청 서블릿들 간 공유가 되어야 하는 공통기능이므로, 특정 서블릿의 수준으로 등록하면 안 된다.
+		// 왜 why 
+		// 예) 관리자용 서블릿에 등록해버리면 쇼핑몰 유저가 톰캣 가동과 동시에 먼저 접근하게 될 경우 모델 객체들이 아직 인스턴스 생성 이전 시점이므로, 모델 객체들을 사용할 수 없게 된다.
+		
+		// 따라서 특정 서블릿에 소속되게 하지 말고, 생명력을 훤씬 더 끌어올려서 스프링빈 컨테이너를 관리하게 하자.
+					즉, 생명력이 길고, 서버를 가동하는 시점부터 태어나는 객체를 이용하면 된다..
+					JavaEE에서 서버 가동과 동시에 생성되어, 서버 종료시까지 생명력을 유지하는 객체인
+					즉, 애플리케이션의 전역 정보를 가진 객체인 ServletContext에게 맡기면 된다.
+					참고) ServletContext의 JSP의 내장객체명은? application
+	 -->
+
+	 <!--
+		복습
+			JSP는 서블릿에서 개발자가 직접 자료형을 이용하여 사용해야 할 객체들을 좀 더 편리하게 사용할 수 있도록
+			내장객체를 지원함. 따라서 개발자는 자료형을 명시하지 않고 이미 정해진 객체의 변수명을 사용할 수 있다.
+			out, request, resposne, session, application
+			application 내장객체 -	애플리케이션의 전역적 정보를 가진 객체 (서블릿에서의 자료형은 ServletContext이다.)
+											톰캣을 켤 때부터 끌 때까지 생명력을 갖는 강력한 객체임, 만일 이 안에 회원정보를 넣으면 톰켓과 생명을 같이 함
+										JavaEE에서 데이터를 담을 수 있는 객체 중 가장 생명력이 길다.
+			session 내장객체 - 클라이언트의 세션쿠키가 유효한 동안, 서버에서 정해놓은 일정시간 동안 재요청이 없을 때까지...
+										로그인 인증에 많이 사용됨
+			request 내장객체 - 요청이 들어와서 응답이 처리될 때까지만 생명을 유지할 수 있음
+	  -->
+
+	<filter>
+		<filter-name>encodingFilter</filter-name>
+		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
+		<init-param>
+			<param-name>encoding</param-name>
+			<param-value>UTF-8</param-value>
+		</init-param>
+	</filter>
+	<filter-mapping>
+		<filter-name>encodingFilter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	 
+	<!-- 
+		우리가 제작한 MVC 프레임웤과 마찬가지로 스프링 MVC 또한 모든 요청을 하나의 진입점으로 몰아넣는다.
+		즉 프론트(맨 앞)에 유일한 컨트롤러 하나를 둔다
+	 -->
+
+	 <!-- 관리자의 요청을 처리할 DispatcherServlet 매핑 -->	 
+	<servlet>
+		<servlet-name>admin-dispatcher</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+	 	<!--
+	 		이 서블릿의 인스턴스가 최초에 생성되어질 때 호출되는 생명주기 메서드인 init() 메서드 안으로 전달할 문자열 정보가 있을 경우 이 파라미터 태그를 이용할 수 있다.
+	 		아래의 경우 전통적으로 사용해왔던 xml 방식이 아닌 자바 클래스를 이용한 설정 방식을 위한 클래스의 위치를 지정하고 있다.
+	 		주의) 자바 설정 방식을 사용할 경우 스프링의 컨테이너는 AnnotationConfigApplicationContext 를 사용해야 하며,
+	 		그 중 웹애플리케이션에 특화된 AnnotationConfigWebApplicationContext 를 사용해야 한다.
+	 	-->
+		 <init-param>
+		 	<param-name>contextClass</param-name>
+			<param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+		 </init-param>
+		 
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>com.ch.shop.config.spring.AdminWebConfig</param-value>
+		</init-param>
+		
+		<!-- 업로드 관련 설정 -->
+		<multipart-config>
+			<location>C:\shopdata\temp</location>	<!-- 이미지가 임시로 저장될 경로 -->
+			<max-file-size>9048576</max-file-size>	<!-- 파일 1개의 최대용량 제한 -->
+			<max-request-size>904857600</max-request-size>	<!-- 요청 전체 크기 제한 -->
+			<file-size-threshold>0</file-size-threshold>		<!-- 0일 경우, 무조건 디스크 사용-->
+		</multipart-config>
+		
+	</servlet>
+	<!-- admin~ 으로 시작하는 요청 매핑(관리자만) -->
+	<servlet-mapping>
+		<servlet-name>admin-dispatcher</servlet-name>
+		<url-pattern>/admin/*</url-pattern>
+	</servlet-mapping>
+	 
+	 
+	<!-- 관리자가 아닌 일반 사용자들의 요청을 처리할 DispatcherServlet 매핑 -->
+	<servlet>
+		<servlet-name>shop-dispatcher</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+		 	<param-name>contextClass</param-name>
+			<param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+		</init-param>
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>com.ch.shop.config.spring.ShopWebConfig</param-value>
+		</init-param>
+	</servlet>
+	<!-- 위의 admin~ 으로 시작하는 것 제외한 모든 요청 매핑.(사용자) -->
+	<servlet-mapping>
+		<servlet-name>shop-dispatcher</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+</web-app>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Size">
+
+	<!-- 모든 사이즈 가져오기 -->
+	<select id="selectAll" resultType="Size">
+		select size_id, size_name from size
+	</select>
+
+	<!-- 특정 상품에 소속된 사이즈만 가져오기 -->
+	<select id="selectSizeByProductId" parameterType="int" resultType="Size">
+		select size_id, size_name from size where size_id in (select size_id from product_size where product_id=#{product_id})
+	</select>
+
+</mapper>

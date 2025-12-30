@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SubCategory">
+
+	<!-- 쇼핑몰의 모든 하위 카테고리 가져오기 -->
+	<select id="selectByTopCategoryID" resultType="SubCategory" parameterType="int">
+		select subcategory_id, subname from subcategory
+		where topcategory_id=#{topcategory_id}
+	</select>
+	
+	<!-- pk값으로 레코드 1건 가져오기 -->
+	<select id="select" parameterType="int" resultType="SubCategory">
+		select * from subcategory where subcategory_id=#{subcategory_id}
+	</select>
+	
+	
+</mapper>

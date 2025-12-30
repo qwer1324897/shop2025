@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Board">
+
+	<!-- 글 1건 등록 -->
+	<insert id="insert" parameterType="Board">
+		insert into board(title, writer, content) values(#{title}, #{writer}, #{content})
+	</insert>
+
+	<!-- 쿼리문의 일부를(중복되는 부분) 별도로 정의해놓고 재사용하기 위해 이렇게 따로 빼놓고 재사용할 수 있다. select ~ from 같은 경우 -->
+	<sql id="sql_select">
+		select board_id, title, writer, content, regdate, hit from board
+	</sql>
+
+	<!-- 게시물 전체 가져오기(전체 글 목록) -->
+	<select id="selectAll" resultType="Board">
+		<include refid="sql_select"></include> order by board_id desc
+	</select>
+
+	<!-- 게시물 1건 가져오기(글 1건 상세내용) -->
+	<select id="select" resultType="Board" parameterType="int">
+		<include refid="sql_select"></include> where board_id=#{board_id}
+	</select>
+	
+	<!-- 게시물 수정 -->
+	<update id="update" parameterType="Board">
+		update board set title=#{title}, writer=#{writer}, content=#{content} where board_id=#{board_id}
+	</update>
+	
+	<!-- 게시물 삭제 -->
+	<delete id="delete" parameterType="int">
+		delete from board where board_id=#{board_id} 
+	</delete>
+	
+	
+	
+</mapper>
