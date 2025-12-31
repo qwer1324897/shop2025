@@ -2,7 +2,10 @@
 target/
 
 # Eclipse
+.metadata/
 .settings/
+build/
+target/
 .classpath
 .project
 
