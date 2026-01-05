@@ -54,6 +54,21 @@
     <%@ include file="../inc/header.jsp" %>
     <!-- Header Section End -->
 	
+	<!-- BreadCrumb Begin -->
+	<div class="breadcrumb-option">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="breadcrumb__links">
+                        <a href="./index.html"><i class="fa fa-home"></i> Home</a>
+                        <span>상품 상세보기</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+	<!-- BreadCrumb End -->
+	
 	<!-- 상품 상세 Begin -->
 	<section class="product-details spad">
 	        <div class="container">
@@ -117,7 +132,7 @@
 	                                    <input type="text" value="1">
 	                                <span class="inc qtybtn">+</span></div>
 	                            </div>
-	                            <a href="#" class="cart-btn"><span class="icon_bag_alt"></span> Add to cart</a>
+	                            <a href="javascript:addCart(<%=product.getProduct_id() %>)" class="cart-btn"><span class="icon_bag_alt"></span>Add to cart</a>
 	                            <ul>
 	                                <li><a href="#"><span class="icon_heart_alt"></span></a></li>
 	                                <li><a href="#"><span class="icon_adjust-horiz"></span></a></li>
@@ -328,6 +343,35 @@
 	
 	<!-- Js Plugins -->
 	<%@ include file="../inc/footer_link.jsp" %>
+	
+	<script>
+	
+		function addCart(product_id) {
+			// 장바구니 담기 요청을 비동기 방식으로 진행
+			let p = new Promise(function(resolve, reject) {
+				$.ajax({
+					url:"/cart/add?product_id=" + product_id,
+					method:"GET",
+					success:function(result, status, xhr) {
+						// 비동기 요청이 성공했음을 Promise 에게 알려줘야 하므로, resolve() 호출
+						resolve();
+					},
+					error:function(xhr, status, err) {
+						// 비동기 요청이 실패했음을 Promise 에게 알려줘야 하므로, reject() 호출
+						reject();
+					}
+				});
+			});
+			p.then(function() {
+				console.log("장바구니 담기 성공"))
+			})
+			p.catch(function() {
+				console.log("장바구니 담기 실패")
+			})
+		}
+	</script>
+	
+	
 </body>
 
 </html>
