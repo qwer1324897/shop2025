@@ -6,8 +6,12 @@ import org.springframework.stereotype.Repository;
 
 import com.ch.shop.dto.Member;
 import com.ch.shop.exception.MemberException;
+import com.mysql.cj.log.Log;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Repository
+@Slf4j
 public class MybatisMemberDAO implements MemberDAO{
 
 	@Autowired
@@ -31,7 +35,10 @@ public class MybatisMemberDAO implements MemberDAO{
 	@Override
 	public void update(Member member) throws MemberException{
 		try {
-			sqlSessionTemplate.update("Member.update", member);
+			int updated = sqlSessionTemplate.update("Member.update", member);
+			if(updated > 0) {
+				log.debug("회원정보 업데이트 함");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new MemberException("회원정보 수정 실패", e);

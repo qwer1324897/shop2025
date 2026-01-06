@@ -69,7 +69,7 @@ public class MemberController {
 	// 회원 로그아웃 요청 처리
 	@GetMapping("/member/logout")
 	public String logout(HttpSession session) {
-		// 로그아웃 처리 시, 세션객체를 메모리에서 제거할 순 없다. > 자바에서 인스턴스는 garbage collector 에 의해 소멸되기 때문.
+		// 로그아웃 처리 시, 세션객체를 메모리에서 제거할 순 없다. > 자바에서 인스턴스는 garbage collector 에 의해서만 소멸되기 때문.
 		// 따라서 세션을 없애는 것이 아니라 무효화 시켜야 한다.
 		session.invalidate();	// invalidate - 무효화하다. 세션을 무효화시키는 api 
 		return "redirect:/";	// 메인페이지로 재접속
