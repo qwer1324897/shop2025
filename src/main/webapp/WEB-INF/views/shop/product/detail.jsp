@@ -365,7 +365,8 @@
 			// 장바구니 담기 요청을 비동기 방식으로 진행
 			let p = new Promise(function(resolve, reject) {
 				$.ajax({
-					url:"/cart/add",
+					// url:"/cart/add", 세션 기반 컨트롤러에 요청
+					url:"/cart/regist",
 					method:"POST",
 					// data:"product_id="+product_id+"&product_name="+$("input[name='product_name']").val()+"&price="+$("input[name='price']").val()+"&ea="+$("input[name='ea']").val() ,
 					// post 방식으로 전송 할 때 파라미터 문자열을 여기에 대입.

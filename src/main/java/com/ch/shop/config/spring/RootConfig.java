@@ -12,6 +12,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -21,6 +25,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
+
+import redis.clients.jedis.Jedis;
+import redis.clients.jedis.JedisPoolConfig;
+
 import org.springframework.web.client.RestTemplate;
 
 // 로직 작성용이 아니라 전통적으로 사용해왔던 스프링의 Bean 을 등록하는 용도의 xml 을 대신하기 위한 자바 클래스.
@@ -136,4 +144,41 @@ public class RootConfig extends WebMvcConfigurerAdapter {
 	}
 
 	// 스프링 프레임웤의 개발원리 중 하나인 DI 를 구현하려면, 개발자는 사용할 객체들을 미리 Bean 으로 등록해놓아야 한다.
+	
+	
+	// Redis DB 관련 Bean 등록
+	@Bean
+	public JedisPoolConfig jedisPoolConfig() {
+		JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+		jedisPoolConfig.setMaxTotal(50);
+		jedisPoolConfig.setMaxIdle(10);
+		jedisPoolConfig.setMinIdle(5);
+		
+		return jedisPoolConfig;
+	}
+	
+	@Bean
+	public RedisConnectionFactory redisConnectionFactory() {
+		JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory();
+		jedisConnectionFactory.setHostName("localhost");
+		jedisConnectionFactory.setPort(6379);
+		jedisConnectionFactory.setUsePool(true);
+		jedisConnectionFactory.setPoolConfig(jedisPoolConfig());
+		
+		return jedisConnectionFactory;
+	}
+	
+	// mybatis spring 에서의 SqlSessionTemplate 과 비슷한 존재
+	// DAO 에서 주입받아 명령을 수행할 예정
+	@Bean
+	public RedisTemplate<String, Object> redisTemplate() {
+		RedisTemplate<String, Object> redisTemplate = new RedisTemplate<String, Object>();
+		redisTemplate.setConnectionFactory(redisConnectionFactory());
+		redisTemplate.setKeySerializer(new StringRedisSerializer());
+		redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+		redisTemplate.setValueSerializer(new StringRedisSerializer());
+		
+		return redisTemplate;
+	}
+	
 }
